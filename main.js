@@ -1,5 +1,4 @@
 // Main javascript file for the SPA
-'use strict'
 
 const ws = new WebSocket('ws://127.0.0.1:3000')
 
