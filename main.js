@@ -22,6 +22,6 @@ function sendMessage (event) {
   console.log('This: ', this)
   console.log('Event: ', event)
 
-  const message = `${this.dataset.arguments}: ${document.getElementById('msgBox').value}`
+  const message = `Arguments: ${this.dataset.arguments}. Message: ${document.getElementById('msgBox').value}`
   ws.send(message)
 }
