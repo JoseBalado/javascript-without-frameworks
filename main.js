@@ -6,16 +6,39 @@ const handlers = {
   getToken: getToken
 }
 
+const events = {
+  token: new Event('token')
+}
+
+document.addEventListener('token', function (event) {
+  console.log('Event received: ', event)
+  console.log('Event payload: ', event.payload)
+})
+
+function toEvent (message) {
+  try {
+    console.log('Message: ', message)
+    const data = JSON.parse(message.data)
+    events[data.type].payload = data.payload
+    document.dispatchEvent(events[data.type])
+  } catch (err) {
+    console.log('not an event', err)
+  }
+}
+
 document.querySelectorAll('[data-handler]')
   .forEach(elem =>
     elem.addEventListener(elem.dataset.event, handlers[elem.dataset.handler])
   )
 
-ws.onmessage = function (message) {
-  const msgDiv = document.createElement('div')
-  msgDiv.innerHTML = message.data
-  document.getElementById('messages').appendChild(msgDiv)
-}
+// ws.onmessage = function (message) {
+//   console.log('message', message)
+//   const msgDiv = document.createElement('div')
+//   msgDiv.innerHTML = message.data
+//   document.getElementById('messages').appendChild(msgDiv)
+// }
+
+ws.onmessage = toEvent
 
 ws.onopen = function () {
   console.log('Connection established')

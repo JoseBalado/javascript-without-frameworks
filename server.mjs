@@ -19,7 +19,7 @@ function toEvent (message) {
   }
 }
 
-wss.on('connection', function connection (ws, unknown) {
+wss.on('connection', function connection (ws) {
   ws.on('message', toEvent)
     .on('authenticate', function incoming (data) {
       console.log('data', data)
@@ -41,7 +41,8 @@ wss.on('connection', function connection (ws, unknown) {
         const token = jwt.sign(data.user, secret)
         console.log('token Created')
         // ws.send(JSON.parse({ type: 'token', payload: { token: token } }))
-        ws.send(token)
+        const message = { type: 'token', payload: token }
+        ws.send(JSON.stringify(message))
       }
     })
   console.log('Connection received')
