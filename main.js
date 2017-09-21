@@ -56,6 +56,7 @@ function sendMessage (event) {
   const message = {
     type: this.dataset.type,
     payload: {
+      token: jwtAccessToken,
       text: document.getElementById('msgBox').value
     }
   }
