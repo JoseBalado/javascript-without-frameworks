@@ -3,7 +3,7 @@
 const ws = new WebSocket('ws://127.0.0.1:3000')
 
 const handlers = {
-  sendMessage: sendMessage
+  getToken: getToken
 }
 
 document.querySelectorAll('[data-handler]')
@@ -17,11 +17,17 @@ ws.onmessage = function (message) {
   document.getElementById('messages').appendChild(msgDiv)
 }
 
-function sendMessage (event) {
-  console.log(`This.dataset.arguments: ${this.dataset.arguments}`)
-  console.log('This: ', this)
-  console.log('Event: ', event)
+ws.onopen = function () {
+  console.log('Connection established')
+}
 
-  const message = `Arguments: ${this.dataset.arguments}. Message: ${document.getElementById('msgBox').value}`
-  ws.send(message)
+function getToken (event) {
+  const message = {
+    type: this.dataset.type,
+    payload: {
+      user: document.getElementById('msgBox').value
+    }
+  }
+
+  ws.send(JSON.stringify(message))
 }
