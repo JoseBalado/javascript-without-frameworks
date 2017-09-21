@@ -2,6 +2,8 @@
 
 const ws = new WebSocket('ws://127.0.0.1:3000')
 
+let jwtAccessToken = ''
+
 const handlers = {
   getToken: getToken
 }
@@ -13,6 +15,7 @@ const events = {
 document.addEventListener('token', function (event) {
   console.log('Event received: ', event)
   console.log('Event payload: ', event.payload)
+  jwtAccessToken = event.payload
 })
 
 function toEvent (message) {
