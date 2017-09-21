@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken'
 
 const wss = new WebSocket.Server({ port: 3000 })
 
+const secret = 'secret'
+
 const users = [{
   name: 'jose',
   password: 1234
@@ -20,9 +22,8 @@ function toEvent (message) {
 wss.on('connection', function connection (ws, unknown) {
   ws.on('message', toEvent)
     .on('authenticate', function incoming (data) {
-      const options = {}
       console.log('data', data)
-      jwt.verify(data.token, options, function (err, decoded) {
+      jwt.verify(data.token, secret, function (err, decoded) {
         if (err) {
           console.log(err)
         }
@@ -37,8 +38,10 @@ wss.on('connection', function connection (ws, unknown) {
         : console.log('User does not exist')
 
       function createToken () {
-        const token = jwt.sign(data.user, 'abrakadabra')
+        const token = jwt.sign(data.user, secret)
         console.log('token Created')
+        // ws.send(JSON.parse({ type: 'token', payload: { token: token } }))
+        ws.send(token)
       }
     })
   console.log('Connection received')
