@@ -14,14 +14,25 @@
 
 <body>
   <div id="messages"></div>
+
   <input type="text"
-         placeholder="Send a message"
-         id="msgBox">
+         placeholder="Type user name"
+         id="userName">
   <input type="button"
          value="Type user name to log in"
          data-handler="getToken"
          data-event="click"
          data-type="getToken">
+
+  <input type="text"
+         placeholder="Send a message"
+         id="msgBox">
+  <input type="button"
+         value="Send message"
+         data-handler="sendMessage"
+         data-event="click"
+         data-type="authenticate">
+
   <script src="./main.js"
           type="module"></script>
 </body>

@@ -7,7 +7,8 @@ const secret = 'secret'
 
 const users = [{
   name: 'jose',
-  password: 1234
+  password: 1234,
+  token: ''
 }]
 
 function toEvent (message) {
@@ -23,6 +24,7 @@ wss.on('connection', function connection (ws) {
   ws.on('message', toEvent)
     .on('authenticate', function incoming (data) {
       console.log('data', data)
+      console.log('token: ', users[0].token)
       jwt.verify(data.token, secret, function (err, decoded) {
         if (err) {
           console.log(err)
@@ -39,6 +41,7 @@ wss.on('connection', function connection (ws) {
 
       function createToken () {
         const token = jwt.sign(data.user, secret)
+        users[0].token = token
         console.log('token Created')
         const message = { type: 'token', payload: token }
         ws.send(JSON.stringify(message))

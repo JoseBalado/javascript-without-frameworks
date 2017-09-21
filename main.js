@@ -5,7 +5,8 @@ const ws = new WebSocket('ws://127.0.0.1:3000')
 let jwtAccessToken = ''
 
 const handlers = {
-  getToken: getToken
+  getToken: getToken,
+  sendMessage: sendMessage
 }
 
 const events = {
@@ -34,13 +35,6 @@ document.querySelectorAll('[data-handler]')
     elem.addEventListener(elem.dataset.event, handlers[elem.dataset.handler])
   )
 
-// ws.onmessage = function (message) {
-//   console.log('message', message)
-//   const msgDiv = document.createElement('div')
-//   msgDiv.innerHTML = message.data
-//   document.getElementById('messages').appendChild(msgDiv)
-// }
-
 ws.onmessage = toEvent
 
 ws.onopen = function () {
@@ -51,7 +45,18 @@ function getToken (event) {
   const message = {
     type: this.dataset.type,
     payload: {
-      user: document.getElementById('msgBox').value
+      user: document.getElementById('userName').value
+    }
+  }
+
+  ws.send(JSON.stringify(message))
+}
+
+function sendMessage (event) {
+  const message = {
+    type: this.dataset.type,
+    payload: {
+      text: document.getElementById('msgBox').value
     }
   }
 
