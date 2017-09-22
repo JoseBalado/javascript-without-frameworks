@@ -5,10 +5,12 @@ const wss = new WebSocket.Server({ port: 3000 })
 
 const secret = 'secret'
 
-const users = [{
-  name: 'jose',
-  password: 1234
-}]
+const users = [
+  {
+    name: 'jose',
+    password: 1234
+  }
+]
 
 function toEvent (message) {
   try {
@@ -23,9 +25,9 @@ wss.on('connection', function connection (ws) {
   ws.on('message', toEvent)
     .on('postMessage', function incoming (data) {
       console.log('data', data)
-      jwt.verify(data.token, secret, function (err, decoded) {
-        if (err) {
-          console.log(err)
+      jwt.verify(data.token, secret, function (error, decoded) {
+        if (error) {
+          console.log('JWT verify error: ', error)
           return ws.emit('error', 'Not authenticated')
         }
         console.log(`received: "${decoded}"`)
@@ -34,7 +36,7 @@ wss.on('connection', function connection (ws) {
     })
     .on('getToken', function getToken (data) {
       console.log('Asking for token')
-      data.user === users[0].name
+      checkUser(data)
         ? createToken()
         : console.log('User does not exist')
 
@@ -44,6 +46,12 @@ wss.on('connection', function connection (ws) {
         console.log('token Created')
         const message = { type: 'token', payload: token }
         ws.send(JSON.stringify(message))
+      }
+
+      function checkUser (data) {
+        return users.find(user => {
+          return user.name === data.user
+        })
       }
     })
 

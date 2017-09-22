@@ -19,7 +19,7 @@ document.addEventListener('error', function (event) {
 })
 
 document.addEventListener('token', function (event) {
-  console.log('Event received: ', event)
+  console.log('Token received: ', event)
   jwtAccessToken = event.payload
 })
 
