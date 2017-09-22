@@ -24,7 +24,7 @@ function toEvent (message) {
 wss.on('connection', function connection (ws) {
   ws.on('message', toEvent)
     .on('postMessage', function incoming (data) {
-      console.log('data', data)
+      console.log('postMessage data', data)
       jwt.verify(data.token, secret, function (error, decoded) {
         if (error) {
           console.log('JWT verify error: ', error)
@@ -37,10 +37,10 @@ wss.on('connection', function connection (ws) {
     .on('getToken', function getToken (data) {
       console.log('Asking for token')
       checkUser(data)
-        ? createToken()
-        : console.log('User does not exist')
+        ? createToken(data)
+        : ws.emit('error', 'User does not exist')
 
-      function createToken () {
+      function createToken (data) {
         const token = jwt.sign(data.user, secret)
         users[0].token = token
         console.log('token Created')

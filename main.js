@@ -15,7 +15,7 @@ const events = {
 }
 
 document.addEventListener('error', function (event) {
-  console.log('Event received: ', event)
+  console.log('Error event received: ', event)
 })
 
 document.addEventListener('token', function (event) {
