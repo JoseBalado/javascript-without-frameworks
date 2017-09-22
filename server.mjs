@@ -29,9 +29,10 @@ wss.on('connection', function connection (ws) {
         if (error) {
           console.log('JWT verify error: ', error)
           return ws.emit('error', 'Not authenticated')
+        } else {
+          console.log(`received: "${decoded}"`)
+          ws.send(JSON.stringify({ type: 'message', payload: data.text }))
         }
-        console.log(`received: "${decoded}"`)
-        ws.send(decoded)
       })
     })
     .on('getToken', function getToken (data) {
@@ -42,7 +43,6 @@ wss.on('connection', function connection (ws) {
 
       function createToken (data) {
         const token = jwt.sign(data.user, secret)
-        users[0].token = token
         console.log('token Created')
         const message = { type: 'token', payload: token }
         ws.send(JSON.stringify(message))

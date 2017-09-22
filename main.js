@@ -4,24 +4,16 @@ const ws = new WebSocket('ws://127.0.0.1:3000')
 
 let jwtAccessToken = ''
 
-const handlers = {
-  getToken: getToken,
-  sendMessage: sendMessage
+ws.onopen = function () {
+  console.log('Connection established')
 }
 
+// Websocket events section
 const events = {
   error: new Event('error'),
-  token: new Event('token')
+  token: new Event('token'),
+  message: new Event('message')
 }
-
-document.addEventListener('error', function (event) {
-  console.log('Error event received: ', event)
-})
-
-document.addEventListener('token', function (event) {
-  console.log('Token received: ', event)
-  jwtAccessToken = event.payload
-})
 
 function toEvent (message) {
   try {
@@ -34,16 +26,32 @@ function toEvent (message) {
   }
 }
 
+ws.onmessage = toEvent
+
+document.addEventListener('error', function (event) {
+  console.log('Error event received: ', event)
+})
+
+document.addEventListener('token', function (event) {
+  console.log('Token received: ', event)
+  jwtAccessToken = event.payload
+})
+
+document.addEventListener('message', function (event) {
+  console.log('Message received: ', event)
+  printMessage(event.payload)
+})
+
+// Data handlers section
+const handlers = {
+  getToken: getToken,
+  sendMessage: sendMessage
+}
+
 document.querySelectorAll('[data-handler]')
   .forEach(elem =>
     elem.addEventListener(elem.dataset.event, handlers[elem.dataset.handler])
   )
-
-ws.onmessage = toEvent
-
-ws.onopen = function () {
-  console.log('Connection established')
-}
 
 function getToken (event) {
   const message = {
@@ -67,3 +75,10 @@ function sendMessage (event) {
 
   ws.send(JSON.stringify(message))
 }
+
+// View section
+function printMessage (message) {
+  const msgDiv = document.createElement('div')
+  msgDiv.innerHTML = `${message}`
+  document.getElementById('messages').appendChild(msgDiv)
+}  
