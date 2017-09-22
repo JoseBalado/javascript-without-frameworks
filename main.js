@@ -81,4 +81,4 @@ function printMessage (message) {
   const msgDiv = document.createElement('div')
   msgDiv.innerHTML = `${message}`
   document.getElementById('messages').appendChild(msgDiv)
-}  
+}

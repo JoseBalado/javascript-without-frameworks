@@ -22,6 +22,8 @@ function toEvent (message) {
 }
 
 wss.on('connection', function connection (ws) {
+  console.log('Connection received')
+
   ws.on('message', toEvent)
     .on('postMessage', function incoming (data) {
       console.log('postMessage data', data)
@@ -30,37 +32,34 @@ wss.on('connection', function connection (ws) {
           console.log('JWT verify error: ', error)
           return ws.emit('error', 'Not authenticated')
         } else {
-          console.log(`received: "${decoded}"`)
+          console.log(`received: { Name: ${decoded.name}, password: ${decoded.password}"`)
           ws.send(JSON.stringify({ type: 'message', payload: data.text }))
         }
       })
     })
     .on('getToken', function getToken (data) {
       console.log('Asking for token')
-      checkUser(data)
+      getUser(data)
         ? createToken(data)
         : ws.emit('error', 'User does not exist')
 
       function createToken (data) {
-        const token = jwt.sign(data.user, secret)
+        const token = jwt.sign(getUser(data), secret)
         console.log('token Created')
-        const message = { type: 'token', payload: token }
-        ws.send(JSON.stringify(message))
+        ws.send(JSON.stringify({ type: 'token', payload: token }
+        ))
       }
 
-      function checkUser (data) {
+      function getUser (data) {
         return users.find(user => {
           return user.name === data.user
         })
       }
     })
 
-  console.log('Connection received')
-
   ws.on('error', function (errorMessage) {
     console.log('Websocket error', errorMessage)
-    const message = { type: 'error', payload: errorMessage }
-    ws.send(JSON.stringify(message))
+    ws.send(JSON.stringify({ type: 'error', payload: errorMessage }))
   })
 
   ws.on('close', function () {
