@@ -2,7 +2,7 @@
     "name": "javascript-without-frameworks",
     "version": "1.0.0",
     "description": "JavaScript without frameworks",
-    "main": "server.js",
+    "main": "server.mjs",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "http-server -p 8088 & node --experimental-modules server.mjs"
