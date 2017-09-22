@@ -16,12 +16,10 @@ const events = {
 
 document.addEventListener('error', function (event) {
   console.log('Event received: ', event)
-  console.log('Event payload: ', event.payload)
 })
 
 document.addEventListener('token', function (event) {
   console.log('Event received: ', event)
-  console.log('Event payload: ', event.payload)
   jwtAccessToken = event.payload
 })
 
