@@ -22,12 +22,13 @@ function toEvent (message) {
 
 wss.on('connection', function connection (ws) {
   ws.on('message', toEvent)
-    .on('authenticate', function incoming (data) {
+    .on('postMessage', function incoming (data) {
       console.log('data', data)
       console.log('token: ', users[0].token)
       jwt.verify(data.token, secret, function (err, decoded) {
         if (err) {
           console.log(err)
+          return ws.emit('error', 'Not authenticated')
         }
         console.log(`received: "${decoded}"`)
         ws.send(decoded)
@@ -47,7 +48,14 @@ wss.on('connection', function connection (ws) {
         ws.send(JSON.stringify(message))
       }
     })
+
   console.log('Connection received')
+
+  ws.on('error', function (errorMessage) {
+    console.log('Websocket error', errorMessage)
+    const message = { type: 'error', payload: errorMessage }
+    ws.send(JSON.stringify(message))
+  })
 
   ws.on('close', function () {
     console.log('Someone closed the connection')
