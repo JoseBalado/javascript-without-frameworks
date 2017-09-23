@@ -57,12 +57,10 @@ wss.on('connection', function connection (ws) {
       }
     })
 
-  ws.on('error', function (errorMessage) {
+  ws.on('error', errorMessage => {
     console.log('Websocket error', errorMessage)
     ws.send(JSON.stringify({ type: 'error', payload: errorMessage }))
   })
 
-  ws.on('close', function () {
-    console.log('Someone closed the connection')
-  })
+  ws.on('close', () => console.log('Someone closed the connection'))
 })

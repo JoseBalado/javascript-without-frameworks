@@ -28,16 +28,16 @@ function toEvent (message) {
 
 ws.onmessage = toEvent
 
-document.addEventListener('error', function (event) {
+document.addEventListener('error', event =>
   console.log('Error event received: ', event)
-})
+)
 
-document.addEventListener('token', function (event) {
-  console.log('Token received: ', event)
+document.addEventListener('token', event => {
+  console.log('Token received, user authenticated: ', event)
   jwtAccessToken = event.payload
 })
 
-document.addEventListener('message', function (event) {
+document.addEventListener('message', event => {
   console.log('Message received: ', event)
   printMessage(event.payload)
 })
