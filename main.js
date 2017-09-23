@@ -53,7 +53,7 @@ document.querySelectorAll('[data-handler]')
     elem.addEventListener(elem.dataset.event, handlers[elem.dataset.handler])
   )
 
-function getToken (event) {
+function getToken () {
   const message = {
     type: this.dataset.type,
     payload: {
@@ -64,7 +64,7 @@ function getToken (event) {
   ws.send(JSON.stringify(message))
 }
 
-function sendMessage (event) {
+function sendMessage () {
   const message = {
     type: this.dataset.type,
     payload: {
