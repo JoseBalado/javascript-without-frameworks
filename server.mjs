@@ -21,21 +21,29 @@ function toEvent (message) {
   }
 }
 
+function checkAuthorization (data, ws) {
+  const authorized = jwt.verify(data.token, secret, function (error, decoded) {
+    if (error) {
+      console.log('JWT verify error: ', error)
+      ws.emit('error', 'Not authenticated')
+      return false
+    } else {
+      console.log(`Token received: Name: ${decoded.name}, password: ${decoded.password}`)
+      return true
+    }
+  })
+  return authorized
+}
+
 wss.on('connection', function connection (ws) {
   console.log('Connection received')
 
   ws.on('message', toEvent)
     .on('postMessage', function incoming (data) {
       console.log('postMessage data', data)
-      jwt.verify(data.token, secret, function (error, decoded) {
-        if (error) {
-          console.log('JWT verify error: ', error)
-          return ws.emit('error', 'Not authenticated')
-        } else {
-          console.log(`received: { Name: ${decoded.name}, password: ${decoded.password}"`)
-          ws.send(JSON.stringify({ type: 'message', payload: data.text }))
-        }
-      })
+      if (checkAuthorization(data, ws)) {
+        ws.send(JSON.stringify({ type: 'message', payload: data.text }))
+      }
     })
     .on('getToken', function getToken (data) {
       console.log('Asking for token')
@@ -62,5 +70,5 @@ wss.on('connection', function connection (ws) {
     ws.send(JSON.stringify({ type: 'error', payload: errorMessage }))
   })
 
-  ws.on('close', () => console.log('Someone closed the connection'))
+  ws.on('close', () => console.log('Connection closed'))
 })
