@@ -1,6 +1,6 @@
 // Main javascript file for the SPA
 
-const ws = new WebSocket('ws://127.0.0.1:3000')
+const ws = new window.WebSocket('ws://127.0.0.1:3000')
 
 let jwtAccessToken = ''
 
@@ -10,9 +10,9 @@ ws.onopen = function () {
 
 // Websocket events section
 const events = {
-  error: new Event('error'),
-  token: new Event('token'),
-  message: new Event('message')
+  error: new window.Event('error'),
+  token: new window.Event('token'),
+  message: new window.Event('message')
 }
 
 function toEvent (message) {

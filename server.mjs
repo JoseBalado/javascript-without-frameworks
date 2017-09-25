@@ -54,8 +54,7 @@ wss.on('connection', function connection (ws) {
       function createToken (data) {
         const token = jwt.sign(getUser(data), secret)
         console.log('token Created')
-        ws.send(JSON.stringify({ type: 'token', payload: token }
-        ))
+        ws.send(JSON.stringify({ type: 'token', payload: token }))
       }
 
       function getUser (data) {
