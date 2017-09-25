@@ -47,21 +47,22 @@ wss.on('connection', function connection (ws) {
     })
     .on('getToken', function getToken (data) {
       console.log('Asking for token')
-      getUser(data)
-        ? createToken(data)
-        : ws.emit('error', 'User does not exist')
-
-      function createToken (data) {
-        const token = jwt.sign(getUser(data), secret)
-        console.log('token Created')
-        ws.send(JSON.stringify({ type: 'token', payload: token }))
-      }
 
       function getUser (data) {
         return users.find(user => {
           return user.name === data.user
         })
       }
+
+      function createToken (data) {
+        const token = jwt.sign(getUser(data), secret)
+        console.log('token Created')
+        return token
+      }
+
+      getUser(data)
+        ? ws.send(JSON.stringify({ type: 'token', payload: createToken(data) }))
+        : ws.emit('error', 'User does not exist')
     })
 
   ws.on('error', errorMessage => {
