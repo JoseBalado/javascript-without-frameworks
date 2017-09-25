@@ -5,7 +5,8 @@
     "main": "server.mjs",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "http-server -p 8088 & node --experimental-modules server.mjs"
+        "start": "http-server -p 8088 & node --experimental-modules server.mjs",
+        "debug": "http-server -p 8088 & node --experimental-modules --nolazy --inspect=5858 server.mjs"
     },
     "author": "Jose Balado",
     "license": "ISC",
