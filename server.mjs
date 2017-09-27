@@ -15,11 +15,11 @@ const users = [
 function eventMiddlewareManager (message) {
   try {
     var event = JSON.parse(message)
-    console.log('event', event)
 
     eventMiddlewareManager.middleware[event.type] &&
-    eventMiddlewareManager.middleware[event.type].map((middleware, message) => {
-      console.log('middleware', middleware, 'message', message)
+    eventMiddlewareManager.middleware[event.type].map((middleware) => {
+      console.log('message', message)
+      middleware(event.payload, this)
     })
     this.emit(event.type, event.payload)
   } catch (err) {
@@ -35,11 +35,11 @@ eventMiddlewareManager.use = (event, middleware) => {
 
 eventMiddlewareManager.use('postMessage', checkAuthorization)
 
-function checkAuthorization (data, ws) {
+function checkAuthorization (data, event) {
   const authorized = jwt.verify(data.token, secret, function (error, decoded) {
     if (error) {
       console.log('JWT verify error: ', error)
-      ws.emit('error', 'Not authenticated')
+      event.emit('error', 'Not authenticated')
       return false
     } else {
       console.log(`Token received: Name: ${decoded.name}, password: ${decoded.password}`)
@@ -55,9 +55,7 @@ wss.on('connection', function connection (ws) {
   ws.on('message', eventMiddlewareManager)
     .on('postMessage', function incoming (data) {
       console.log('postMessage data', data)
-      if (checkAuthorization(data, ws)) {
-        ws.send(JSON.stringify({ type: 'message', payload: data.text }))
-      }
+      ws.send(JSON.stringify({ type: 'message', payload: data.text }))
     })
     .on('getToken', function getToken (data) {
       console.log('Asking for token')
