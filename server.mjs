@@ -15,7 +15,12 @@ const users = [
 function eventMiddlewareManager (message) {
   try {
     var event = JSON.parse(message)
-    // eventMiddlewareManager[event.type].map()
+    console.log('event', event)
+
+    eventMiddlewareManager.middleware[event.type] &&
+    eventMiddlewareManager.middleware[event.type].map((middleware, message) => {
+      console.log('middleware', middleware, 'message', message)
+    })
     this.emit(event.type, event.payload)
   } catch (err) {
     console.log('not an event', err)
