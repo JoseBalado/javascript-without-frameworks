@@ -12,14 +12,23 @@ const users = [
   }
 ]
 
-function toEvent (message) {
+function eventMiddlewareManager (message) {
   try {
     var event = JSON.parse(message)
+    // eventMiddlewareManager[event.type].map()
     this.emit(event.type, event.payload)
   } catch (err) {
     console.log('not an event', err)
   }
 }
+
+eventMiddlewareManager.middleware = {}
+eventMiddlewareManager.use = (event, middleware) => {
+  eventMiddlewareManager.middleware[event] = eventMiddlewareManager.middleware[event] || []
+  eventMiddlewareManager.middleware[event].push(middleware)
+}
+
+eventMiddlewareManager.use('postMessage', checkAuthorization)
 
 function checkAuthorization (data, ws) {
   const authorized = jwt.verify(data.token, secret, function (error, decoded) {
@@ -38,7 +47,7 @@ function checkAuthorization (data, ws) {
 wss.on('connection', function connection (ws) {
   console.log('Connection received')
 
-  ws.on('message', toEvent)
+  ws.on('message', eventMiddlewareManager)
     .on('postMessage', function incoming (data) {
       console.log('postMessage data', data)
       if (checkAuthorization(data, ws)) {
