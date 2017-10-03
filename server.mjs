@@ -12,26 +12,36 @@ const users = [
   }
 ]
 
-function eventMiddlewareManager (message) {
-  try {
-    var event = JSON.parse(message)
+const EventMiddlewareManager = () => {
+  const middlewareStorage = {}
 
-    eventMiddlewareManager.middleware[event.type] &&
-    eventMiddlewareManager.middleware[event.type].map((middleware) => {
-      console.log('message', message)
-      middleware(event.payload, this)
-    })
-    this.emit(event.type, event.payload)
-  } catch (err) {
-    console.log('not an event', err)
+  function processEvent (message) {
+    try {
+      const event = JSON.parse(message)
+
+      middlewareStorage[event.type] &&
+        middlewareStorage[event.type].map(middleware => {
+          console.log('message', message)
+          middleware(event.payload, this)
+        })
+      this.emit(event.type, event.payload)
+    } catch (error) {
+      console.log('not an event', error)
+    }
+  }
+
+  function use (event, middleware) {
+    middlewareStorage[event] = middlewareStorage[event] || []
+    middlewareStorage[event].push(middleware)
+  }
+
+  return {
+    processEvent: processEvent,
+    use: use
   }
 }
 
-eventMiddlewareManager.middleware = {}
-eventMiddlewareManager.use = (event, middleware) => {
-  eventMiddlewareManager.middleware[event] = eventMiddlewareManager.middleware[event] || []
-  eventMiddlewareManager.middleware[event].push(middleware)
-}
+const eventMiddlewareManager = EventMiddlewareManager()
 
 eventMiddlewareManager.use('postMessage', checkAuthorization)
 
@@ -52,7 +62,7 @@ function checkAuthorization (data, event) {
 wss.on('connection', function connection (ws) {
   console.log('Connection received')
 
-  ws.on('message', eventMiddlewareManager)
+  ws.on('message', eventMiddlewareManager.processEvent)
     .on('postMessage', function incoming (data) {
       console.log('postMessage data', data)
       ws.send(JSON.stringify({ type: 'message', payload: data.text }))
