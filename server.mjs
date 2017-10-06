@@ -15,15 +15,27 @@ const users = [
 const EventMiddlewareManager = () => {
   const middlewareStorage = {}
 
-  function processEvent (message) {
-    try {
-      const event = JSON.parse(message)
+  function finish () {
+    console.log('All middleware processed')
+  }
 
-      middlewareStorage[event.type] &&
-        middlewareStorage[event.type].map(middleware => {
-          console.log('message', message)
-          middleware(event.payload, this)
-        })
+  function processEvent (message) {
+    const event = JSON.parse(message)
+
+    function iterator (index) {
+      if (index === middlewareStorage[event.type].length) {
+        return finish && finish()
+      }
+      middlewareStorage[event.type][index].call(this, arguments, error => {
+        if (error) {
+          return console.log('There was an error: ' + error.message)
+        }
+        iterator.call(this, ++index)
+      })
+    }
+    middlewareStorage[event.type] && iterator.call(this, 0)
+
+    try {
       this.emit(event.type, event.payload)
     } catch (error) {
       console.log('not an event', error)
@@ -45,18 +57,17 @@ const eventMiddlewareManager = EventMiddlewareManager()
 
 eventMiddlewareManager.use('postMessage', checkAuthorization)
 
-function checkAuthorization (data, event) {
-  const authorized = jwt.verify(data.token, secret, function (error, decoded) {
+function checkAuthorization (data, event, next) {
+  jwt.verify(data.token, secret, function (error, decoded) {
     if (error) {
       console.log('JWT verify error: ', error)
       event.emit('error', 'Not authenticated')
-      return false
+      return next('Error Not authenticated')
     } else {
       console.log(`Token received: Name: ${decoded.name}, password: ${decoded.password}`)
-      return true
+      return next()
     }
   })
-  return authorized
 }
 
 wss.on('connection', function connection (ws) {
