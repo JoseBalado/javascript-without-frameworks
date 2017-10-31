@@ -1,7 +1,12 @@
 import WebSocket from 'ws'
+import https from 'https'
+import fs from 'fs'
 import jwt from 'jsonwebtoken'
 
-const wss = new WebSocket.Server({ port: 3000 })
+const options = {
+  key: fs.readFileSync('certificate/server.key'),
+  cert: fs.readFileSync('certificate/server.crt')
+}
 
 const secret = 'secret'
 
@@ -11,6 +16,9 @@ const users = [
     password: 1234
   }
 ]
+
+const app = https.createServer(options).listen(3000)
+const wss = new WebSocket.Server({ server: app })
 
 const EventMiddlewareManager = () => {
   const middlewareStorage = {}

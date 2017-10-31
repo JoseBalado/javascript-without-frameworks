@@ -1,6 +1,6 @@
 // Main javascript file for the SPA
 
-const ws = new window.WebSocket('ws://127.0.0.1:3000')
+const ws = new window.WebSocket('wss://127.0.0.1:3000')
 
 let jwtAccessToken = ''
 

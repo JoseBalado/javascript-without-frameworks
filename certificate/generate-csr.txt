@@ -1,0 +1,19 @@
+# Generate a 2048-bit key
+$ openssl genrsa -des3 -passout pass:x -out server.pass.key 2048
+
+
+# Generate private key
+$ openssl rsa -passin pass:x -in server.pass.key -out server.key
+
+
+# Remove the key
+$ rm server.pass.key
+
+
+# Create CSR
+$ openssl req -new -key server.key -out server.csr -subj '/C=IE/ST=Dublin/L=Los Angeles/O=InflightDublin/OU=Information Technology/CN=ws.inflightdublin.com/emailAddress=myemail@myserver.com/subjectAltName=DNS.1=endpoint.com' > server.csr
+
+
+# Self-signed certificate
+$ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
