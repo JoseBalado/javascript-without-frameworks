@@ -11,7 +11,7 @@ $ rm server.pass.key
 
 
 # Create CSR
-$ openssl req -new -key server.key -out server.csr -subj '/C=IE/ST=Dublin/L=Los Angeles/O=InflightDublin/OU=Information Technology/CN=ws.inflightdublin.com/emailAddress=myemail@myserver.com/subjectAltName=DNS.1=endpoint.com' > server.csr
+$ openssl req -new -key server.key -out server.csr -subj '/C=IE/ST=Dublin/L=Dublin/O=InflightDublin/OU=Information Technology/CN=ws.inflightdublin.com/emailAddress=myemail@myserver.com' > server.csr
 
 
 # To get a proper server certificate, the CSR file is all you need.
