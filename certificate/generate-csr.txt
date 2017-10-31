@@ -14,6 +14,10 @@ $ rm server.pass.key
 $ openssl req -new -key server.key -out server.csr -subj '/C=IE/ST=Dublin/L=Los Angeles/O=InflightDublin/OU=Information Technology/CN=ws.inflightdublin.com/emailAddress=myemail@myserver.com/subjectAltName=DNS.1=endpoint.com' > server.csr
 
 
+# To get a proper server certificate, the CSR file is all you need.
+# You will receive a certificate file from the Certificate Authority.
+# While you wait, let’s get the self-signed certificate for testing.
+
 # Self-signed certificate
 $ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 
