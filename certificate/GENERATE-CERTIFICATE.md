@@ -39,3 +39,39 @@ It is possible to create a self-signed certificate for testing purposes.
 ```
 $ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
 ```
+
+
+### Sample Code of websockets code using certificates
+
+Front-end
+
+```
+const ws = new window.WebSocket('wss://127.0.0.1:3000')
+```
+
+Back-end
+```
+import WebSocket from 'ws'
+import https from 'https'
+import fs from 'fs'
+
+const options = {
+  key: fs.readFileSync('certificate/server.key'),
+  cert: fs.readFileSync('certificate/server.crt')
+}
+
+const app = https.createServer(options).listen(3000)
+const wss = new WebSocket.Server({ server: app })
+```
+
+Launching http-server with SSL using certificates.
+
+If http-server is serving the front-end files, it is a good idea to use SSL, even if this is not related to getting an secure websocket connection.
+
+npm script in `package.json`
+```
+"scripts": {
+  "start": "http-server -p 8088 -S -C 'certificate/server.crt' -K 'certificate/server.key' & node --experimental-modules server.mjs",
+  "debug": "http-server -p 8088 -S -C 'certificate/server.crt' -K 'certificate/server.key' & node --experimental-modules --nolazy --inspect=5858 server.mjs"
+},
+```
