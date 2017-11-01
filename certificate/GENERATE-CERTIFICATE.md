@@ -1,4 +1,12 @@
-## Generate a certificate
+## Generating a Self-Signed Certificate
+
+Generate a self-signed certificate using OpenSSL.
+
+Install OpenSSL in Linux
+```
+sudo apt-get update
+sudo apt-get install openssl
+```
 
 ### Generate a 2048-bit key:
 ```
